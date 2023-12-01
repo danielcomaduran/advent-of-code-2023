@@ -7,8 +7,6 @@ class Decoder:
             Attributes
             ----------
             - `code_file`: Path to text file with secret code
-            
-
         """
         self.code_file = code_file
 
