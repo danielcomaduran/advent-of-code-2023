@@ -91,6 +91,57 @@ def find_numbers_next_to_symbol(test_line:str, contiguous_lines:list[str]):
 
     return contiguous_numbers
 
+def find_asterisks(line):
+    """ Returns the index of * in a line """
+    iasteriks = [c for (c,char) in enumerate(line) if (char == "*")]
+    
+    return iasteriks
+
+def find_gear_ratios(test_line:str, contiguous_lines:list[str]):
+    iasterisks = find_asterisks(test_line)
+
+    # Preallocate sizes of number lists
+    numbers = [None] * len(contiguous_lines)
+    istart = [None] * len(contiguous_lines)
+    iend = [None] * len(contiguous_lines)
+
+    # Get nunmbers and indices
+    for (l,line) in enumerate(contiguous_lines):
+        (numbers[l], istart[l], iend[l]) = find_numbers(line)
+
+    # Keep numbers that touch an asterisk symbol    
+    gear_ratios = []
+    for asterisk in iasterisks:
+        adjacent_nums = 0   # Counter for numbers adjacent to an asterisk
+        temp_ratio = 1
+
+        for (l,line) in enumerate(contiguous_lines):
+            for n,number in enumerate(numbers[l]):
+                # Make sure you don't check below index 0
+                temp_start = istart[l][n] - 1
+                if temp_start < 0: 
+                    temp_start = 0 
+
+                # Make sure you don't check over last index
+                temp_end = iend[l][n] + 1
+                if temp_end > len(line)-1:
+                    temp_end = len(line)-1
+
+                # If asterisk is touching the number
+                if (asterisk >= temp_start) & (asterisk <= temp_end):
+                    temp_ratio *= number
+                    adjacent_nums += 1
+        
+        # If there was more than one number next to an asterisk
+        if (adjacent_nums > 1):
+            gear_ratios.append(temp_ratio)
+        
+        # If there where no numbers next to an asterisk
+        if gear_ratios == []:
+            gear_ratios = [0]
+        
+    return gear_ratios        
+
 
 #%% Part 1
 #   - Find all numbers that are next to a symbol in the previous or next line
@@ -110,4 +161,22 @@ for l,line in enumerate(code):
 
 all_numbers = sum(sum(contiguous_numbers, []))
 print(f"Part 1\nAll numbers = {all_numbers}")
-contiguous_numbers2 = sum(contiguous_numbers, [])
+
+#%% Part 2
+#   - Find gear ratios based on * symbol
+gear_ratios = []
+nlines = len(code) - 1
+
+for l,line in enumerate(code):
+    # Test case for first line
+    if (l == 0):
+        gear_ratios.append(find_gear_ratios(line, [code[0], code[1]]))
+    # Test case for last line
+    elif (l == nlines):
+        gear_ratios.append(find_gear_ratios(line, [code[-2], code[-1]]))
+    # Any other line
+    else:
+        gear_ratios.append(find_gear_ratios(line, [code[l-1], code[l], code[l+1]]))
+
+total_ratio = sum(sum(gear_ratios, []))
+print(f"Part 1\nAll numbers = {total_ratio}")
