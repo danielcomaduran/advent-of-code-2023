@@ -118,18 +118,16 @@ def complete_mapping(mapping_dict, seed):
 
 #%% Part 1
 #   Translate all the seeds to locations. Return the lowest number
-
-
-# Get mapping dictionary
+#   Get mapping dictionary
 mapping_dict = extract_mapping_functions(code)
 
-#%% Get seeds
+#   Get seeds
 seeds = code[0].split(":")[-1].split(" ")[1:]
 
-#%% Translate seeds to locations
+#   Translate seeds to locations
 locations = []
 for seed in seeds:
     locations.append(complete_mapping(mapping_dict, int(seed)))
 
-# Return lowest location
+#   Return lowest location
 print(f"Lowest location is {min(locations)}")
